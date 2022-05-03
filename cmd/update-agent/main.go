@@ -24,6 +24,7 @@ var (
 
 	reapTimeout = flag.Int("grace-period", 600,
 		"Period of time in seconds given to a pod to terminate when rebooting for an update")
+	volumeTimeout = flag.Int("volume-period", 3600, "Period of time given for volumes to detach")
 )
 
 func main() {
@@ -68,6 +69,7 @@ func main() {
 	config := &agent.Config{
 		NodeName:               *node,
 		PodDeletionGracePeriod: time.Duration(*reapTimeout) * time.Second,
+		VolumeDetachPeriod:     time.Duration(*volumeTimeout) * time.Second,
 		Clientset:              clientset,
 		StatusReceiver:         updateEngineClient,
 		Rebooter:               rebooter,

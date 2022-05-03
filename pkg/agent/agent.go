@@ -36,6 +36,7 @@ import (
 type Config struct {
 	NodeName                string
 	PodDeletionGracePeriod  time.Duration
+	VolumeDetachPeriod      time.Duration
 	Clientset               kubernetes.Interface
 	StatusReceiver          StatusReceiver
 	Rebooter                Rebooter
@@ -68,6 +69,7 @@ type klocksmith struct {
 	ue                      StatusReceiver
 	lc                      Rebooter
 	reapTimeout             time.Duration
+	volumeTimeout           time.Duration
 	hostFilesPrefix         string
 	pollInterval            time.Duration
 	maxOperatorResponseTime time.Duration
@@ -123,6 +125,7 @@ func New(config *Config) (Klocksmith, error) {
 		ue:                      config.StatusReceiver,
 		lc:                      config.Rebooter,
 		reapTimeout:             config.PodDeletionGracePeriod,
+		volumeTimeout:           config.VolumeDetachPeriod,
 		hostFilesPrefix:         config.HostFilesPrefix,
 		pollInterval:            pollInterval,
 		maxOperatorResponseTime: maxOperatorResponseTime,
@@ -332,6 +335,11 @@ func (k *klocksmith) process(ctx context.Context) error {
 		return fmt.Errorf("waiting for all pods to terminate before the reboot interrupted")
 	}
 
+	err = k.waitVolumeDetach(ctx)
+	if err != nil {
+		return fmt.Errorf("waiting for all volumes to detach before the reboot interrupted")
+	}
+
 	klog.Info("Node drained, rebooting")
 
 	// Reboot.
@@ -341,6 +349,21 @@ func (k *klocksmith) process(ctx context.Context) error {
 	sleepOrDone(24*7*time.Hour, ctx.Done())
 
 	return nil
+}
+
+func (k *klocksmith) waitVolumeDetach(ctx context.Context) error {
+	return wait.PollImmediateWithContext(ctx, 20*time.Second, k.volumeTimeout, func(ctx context.Context) (done bool, err error) {
+		node, err := k.nc.Get(ctx, k.nodeName, metav1.GetOptions{})
+		if err != nil {
+			return false, err
+		}
+		volumeCount := len(node.Status.VolumesAttached)
+		klog.Infof("There are %v volumes attached to node %v.", volumeCount, node.Name)
+		if volumeCount == 0 {
+			return true, nil
+		}
+		return false, nil
+	})
 }
 
 // updateStatusCallback receives Status messages from update engine. If the
