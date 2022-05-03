@@ -1,26 +1,14 @@
-FROM golang:1.17-alpine3.14 as builder
+FROM golang:1.18-alpine as builder
 
 RUN apk add -U make git
-
 WORKDIR /usr/src/github.com/flatcar-linux/flatcar-linux-update-operator
-
 COPY . .
+RUN make bin/update-agent
 
-RUN make bin/update-agent bin/update-operator
-
-FROM alpine:3.14
-
-MAINTAINER Kinvolk
-
-LABEL org.opencontainers.image.source https://github.com/flatcar-linux/flatcar-linux-update-operator
-
-RUN apk add -U ca-certificates
-
+FROM gcr.io/distroless/static:nonroot
+LABEL source_repository=https://github.com/sapcc/flatcar-linux-update-operator""
 WORKDIR /bin
-
 COPY --from=builder /usr/src/github.com/flatcar-linux/flatcar-linux-update-operator/bin/update-agent .
-COPY --from=builder /usr/src/github.com/flatcar-linux/flatcar-linux-update-operator/bin/update-operator .
-
-USER 65534:65534
+USER nonroot:nonroot
 
 ENTRYPOINT ["/bin/update-agent"]
