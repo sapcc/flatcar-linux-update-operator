@@ -1,4 +1,4 @@
-FROM golang:1.19-alpine3.15 as builder
+FROM golang:1.20-alpine3.18 as builder
 RUN apk add -U make git
 WORKDIR /usr/src/github.com/flatcar/flatcar-linux-update-operator
 COPY . .
