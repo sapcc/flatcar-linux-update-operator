@@ -80,6 +80,8 @@ linters-settings:
 linters:
   disable-all: false
   disable:
+    # There is no need for whitelist of allowed dependencies.
+    - depguard
     # We use different import grouping style than gci forces.
     - gci
     # We still have many globals to get rid of.
@@ -110,9 +112,9 @@ linters:
     - contextcheck
     - cyclop
     - decorder
-    - depguard
     - dogsled
     - dupl
+    - dupword
     - durationcheck
     - errcheck
     - errchkjson
@@ -124,6 +126,7 @@ linters:
     - forbidigo
     - forcetypeassert
     - funlen
+    - gocheckcompilerdirectives
     - gochecknoinits
     - gocognit
     - goconst
@@ -138,15 +141,17 @@ linters:
     - gomoddirectives
     - gomodguard
     - goprintffuncname
+    - gosmopolitan
     - grouper
     - importas
     - ineffassign
     - interfacebloat
     - lll
-    - logrlint
     - maintidx
     - makezero
+    - mirror
     - misspell
+    - musttag
     - nakedret
     - nestif
     - nilerr
@@ -165,8 +170,10 @@ linters:
     - rowserrcheck
     - sqlclosecheck
     - stylecheck
+    - tagalign
     - tagliatelle
     - tenv
+    - testableexamples
     - testpackage
     - thelper
     - tparallel
@@ -179,3 +186,4 @@ linters:
     - whitespace
     - wrapcheck
     - wsl
+    - zerologlint

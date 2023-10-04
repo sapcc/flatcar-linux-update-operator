@@ -27,7 +27,7 @@ import (
 const (
 	leaderElectionEventSourceComponent = "update-operator-leader-election"
 	defaultMaxRebootingNodes           = 1
-	defaultLockType                    = resourcelock.ConfigMapsLeasesResourceLock
+	defaultLockType                    = resourcelock.LeasesResourceLock
 
 	leaderElectionResourceName = "flatcar-linux-update-operator-lock"
 
