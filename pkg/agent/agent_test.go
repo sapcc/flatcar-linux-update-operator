@@ -1682,7 +1682,7 @@ func validTestConfig(t *testing.T, node *corev1.Node) (*agent.Config, *corev1.No
 	files := map[string]string{
 		"/usr/share/flatcar/update.conf": "GROUP=imageGroup",
 		"/etc/flatcar/update.conf":       "GROUP=configuredGroup",
-		"/etc/os-release":                "ID=testID\nVERSION=testVersion",
+		"/etc/os-release":                "ID=\"testID\"\nVERSION=\"testVersion\"",
 	}
 
 	hostFilesPrefix := t.TempDir()

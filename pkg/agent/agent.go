@@ -518,7 +518,7 @@ func splitNewlineEnv(envVars map[string]string, envs string) {
 			continue
 		}
 
-		envVars[spl[0]] = spl[1]
+		envVars[spl[0]] = strings.Trim(spl[1], "\"'")
 	}
 }
 
