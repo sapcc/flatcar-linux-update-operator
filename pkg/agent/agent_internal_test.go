@@ -54,6 +54,20 @@ func Test_splitNewlineEnv(t *testing.T) {
 		}
 	})
 
+	t.Run("handles_unquoted_values", func(t *testing.T) {
+		t.Parallel()
+
+		expected := map[string]string{"ID": "flatcar", "VERSION": "4593.1.0"}
+
+		input := map[string]string{}
+
+		splitNewlineEnv(input, "ID=flatcar\nVERSION=4593.1.0")
+
+		if !reflect.DeepEqual(expected, input) {
+			t.Fatalf("Expected %q, got %q", expected, input)
+		}
+	})
+
 	t.Run("strips_double_quotes_from_values", func(t *testing.T) {
 		t.Parallel()
 
